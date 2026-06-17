@@ -9,7 +9,7 @@ from playwright.async_api import async_playwright
 
 SEARCH_URL = (
     "https://www.spotahome.com/s/amsterdam"
-    "?priceMax=1300&furnished=true"
+    "?priceMax=1300&furnished=true&roomType=room"
 )
 MAX_RENT = 1300
 MAX_PAGES = 5

@@ -63,23 +63,25 @@ def _parse_card(href: str, text: str) -> object:
         street_m = re.search(r"([A-Za-z][^,\n]{3,40}\s+\d+[^,]*?),\s*\d{4}\s*[A-Z]{2}", text)
     street = street_m.group(1).strip() if street_m else ""
 
-    # Neighbourhood: Amsterdam postal codes map to neighbourhoods
-    # Extract from postal code range (rough heuristic)
+    # Neighbourhood: Amsterdam postal codes mapped to target neighbourhoods.
+    # More specific sub-areas checked first so they take priority.
     pc_m = re.search(r"(\d{4})\s*[A-Z]{2}", text)
     neighbourhood = None
     if pc_m:
         pc = int(pc_m.group(1))
-        if 1011 <= pc <= 1018:
-            neighbourhood = "Centrum"
-        elif 1051 <= pc <= 1059:
-            neighbourhood = "Oud-West"
-        elif 1071 <= pc <= 1079:
-            neighbourhood = "Oud-Zuid"
-        elif 1072 <= pc <= 1075:
-            neighbourhood = "De Pijp"
-        elif 1015 <= pc <= 1017:
+        if 1015 <= pc <= 1017:        # Jordaan (subset of Centrum range)
             neighbourhood = "Jordaan"
-        elif 1091 <= pc <= 1099:
+        elif 1072 <= pc <= 1075:      # De Pijp (subset of Oud-Zuid range)
+            neighbourhood = "De Pijp"
+        elif 1011 <= pc <= 1019:      # Centrum (broader)
+            neighbourhood = "Centrum"
+        elif 1052 <= pc <= 1059:      # Oud-West
+            neighbourhood = "Oud-West"
+        elif 1060 <= pc <= 1069:      # West (Bos en Lommer, Slotervaart)
+            neighbourhood = "West"
+        elif 1071 <= pc <= 1079:      # Oud-Zuid (broader)
+            neighbourhood = "Oud-Zuid"
+        elif 1091 <= pc <= 1099:      # Oost
             neighbourhood = "Oost"
 
     prop_type = _parse_type(lines[0] if lines else text)

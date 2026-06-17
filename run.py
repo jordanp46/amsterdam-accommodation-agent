@@ -40,6 +40,7 @@ async def scrape_all() -> list[dict]:
     from scraper_spotahome import scrape as scrape_spotahome
     from scraper_huurwoningen import scrape as scrape_huurwoningen
     from scraper_rentola import scrape as scrape_rentola
+    from scraper_123wonen import scrape as scrape_123wonen
 
     print("Scraping Kamernet...")
     kamernet = await scrape_kamernet()
@@ -59,7 +60,10 @@ async def scrape_all() -> list[dict]:
     print("Scraping Rentola...")
     rentola = await scrape_rentola()
 
-    all_listings = kamernet + pararius + ha + spotahome + huurwoningen + rentola
+    print("Scraping 123wonen...")
+    w123 = await scrape_123wonen()
+
+    all_listings = kamernet + pararius + ha + spotahome + huurwoningen + rentola + w123
 
     # Deduplicate by id
     seen: set[str] = set()
@@ -74,7 +78,7 @@ async def scrape_all() -> list[dict]:
         "generated_at": date.today().isoformat(),
         "sources_scraped": [
             "kamernet.nl", "pararius.nl", "housinganywhere.com",
-            "spotahome.com", "huurwoningen.nl", "rentola.nl",
+            "spotahome.com", "huurwoningen.nl", "rentola.nl", "123wonen.nl",
         ],
         "totals": {
             "kamernet": len(kamernet),
@@ -83,6 +87,7 @@ async def scrape_all() -> list[dict]:
             "spotahome": len(spotahome),
             "huurwoningen": len(huurwoningen),
             "rentola": len(rentola),
+            "123wonen": len(w123),
             "total": len(unique),
         },
         "listings": unique,
