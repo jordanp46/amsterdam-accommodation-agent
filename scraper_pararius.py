@@ -7,7 +7,7 @@ from datetime import date
 from playwright.async_api import async_playwright
 
 SEARCH_URLS = [
-    "https://www.pararius.nl/huurwoningen/amsterdam",
+    "https://www.pararius.nl/huurwoningen/amsterdam/0-1300",
 ]
 MAX_RENT = 1300
 MAX_PAGES = 5
@@ -99,7 +99,7 @@ async def _scrape_url(page, base_url: str, seen_ids: set) -> list[dict]:
         await page.wait_for_timeout(1500)
 
         cards = await page.evaluate("""() => {
-            const items = document.querySelectorAll('li.search-list__item--listing');
+            const items = document.querySelectorAll('li.search-list__item');
             return Array.from(items).map(li => {
                 const a = li.querySelector('a[href*="-te-huur/"], a[href*="huurwoningen"]');
                 return { href: a ? a.href : null, text: li.innerText };

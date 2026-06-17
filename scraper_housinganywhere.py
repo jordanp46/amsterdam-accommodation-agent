@@ -10,13 +10,14 @@ from playwright.async_api import async_playwright
 
 SEARCH_URL = "https://housinganywhere.com/s/Amsterdam--Netherlands"
 MAX_RENT = 1300
-MIN_SIZE = 12
+MIN_SIZE = 8
 AVAILABLE_BY = date(2026, 8, 1)   # must be available before this date
 
 
 def _parse_id(url: str) -> str:
     # e.g. https://housinganywhere.com/room/ut1123703/nl/Amsterdam/vijzelstraat
-    m = re.search(r"/room/(ut\d+)/", url)
+    #   or https://housinganywhere.com/apartment/ut9999999/nl/Amsterdam/...
+    m = re.search(r"/(?:room|apartment|studio)/(ut\d+)/", url)
     return f"ha-{m.group(1)}" if m else f"ha-{url.split('/')[-1]}"
 
 
@@ -116,7 +117,9 @@ async def scrape() -> list[dict]:
             await page.wait_for_timeout(800)
 
         cards = await page.evaluate("""() => {
-            const links = Array.from(document.querySelectorAll('a[href*="/room/"]'));
+            const links = Array.from(document.querySelectorAll(
+                'a[href*="/room/"], a[href*="/apartment/"], a[href*="/studio/"]'
+            )).filter(a => /\\/ut\\d+\\//.test(a.href));
             const seen = new Set();
             return links
                 .filter(a => { if (seen.has(a.href)) return false; seen.add(a.href); return true; })
