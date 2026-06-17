@@ -37,6 +37,10 @@ async def scrape_all() -> list[dict]:
     from scraper_kamernet import scrape as scrape_kamernet
     from scraper_pararius import scrape as scrape_pararius
     from scraper_housinganywhere import scrape as scrape_ha
+    from scraper_spotahome import scrape as scrape_spotahome
+    from scraper_nestpick import scrape as scrape_nestpick
+    from scraper_roommates import scrape as scrape_roommates
+    from scraper_easykamer import scrape as scrape_easykamer
 
     print("Scraping Kamernet...")
     kamernet = await scrape_kamernet()
@@ -47,7 +51,19 @@ async def scrape_all() -> list[dict]:
     print("Scraping HousingAnywhere...")
     ha = await scrape_ha()
 
-    all_listings = kamernet + pararius + ha
+    print("Scraping Spotahome...")
+    spotahome = await scrape_spotahome()
+
+    print("Scraping Nestpick...")
+    nestpick = await scrape_nestpick()
+
+    print("Scraping Roommates.nl...")
+    roommates = await scrape_roommates()
+
+    print("Scraping Easykamer...")
+    easykamer = await scrape_easykamer()
+
+    all_listings = kamernet + pararius + ha + spotahome + nestpick + roommates + easykamer
 
     # Deduplicate by id
     seen: set[str] = set()
@@ -60,11 +76,18 @@ async def scrape_all() -> list[dict]:
     # Write merged listings.json
     output = {
         "generated_at": date.today().isoformat(),
-        "sources_scraped": ["kamernet.nl", "pararius.nl", "housinganywhere.com"],
+        "sources_scraped": [
+            "kamernet.nl", "pararius.nl", "housinganywhere.com",
+            "spotahome.com", "nestpick.com", "roommates.nl", "easykamer.nl",
+        ],
         "totals": {
             "kamernet": len(kamernet),
             "pararius": len(pararius),
             "housinganywhere": len(ha),
+            "spotahome": len(spotahome),
+            "nestpick": len(nestpick),
+            "roommates": len(roommates),
+            "easykamer": len(easykamer),
             "total": len(unique),
         },
         "listings": unique,
